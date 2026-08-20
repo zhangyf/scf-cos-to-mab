@@ -1,0 +1,18 @@
+# 构建 / 依赖打包中间产物（不要提交，体积大且可再生成）
+build/
+pkg/
+pkg39/
+probe_tmp/
+verify_unzip/
+zt_jlvqem/
+
+# 探测/对账报告（可能含真实桶名与 AppID，勿提交）
+report.json
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.venv/
+venv/

@@ -1,0 +1,49 @@
+{
+  "_comment": [
+    "SCF 运行角色 SCF_MabMoverRole 的最小权限策略。",
+    "使用前把 <uin>、<appid>、srcbucket、dstmab 替换成实际值。",
+    "<uin> 是账号 ID（不是 APPID），可在控制台账号信息页查看。",
+    "注意：本函数不做任何 list 操作，因此【不需要】cos:GetBucket 权限。",
+    "resource 已收窄到前缀级，函数无法访问桶内其它路径。"
+  ],
+  "version": "2.0",
+  "statement": [
+    {
+      "_comment": "源普通桶：只读 prod-logs/ 前缀",
+      "effect": "allow",
+      "action": [
+        "cos:GetObject",
+        "cos:HeadObject"
+      ],
+      "resource": [
+        "qcs::cos:ap-tokyo:uid/<uin>:srcbucket-<appid>/prod-logs/*"
+      ]
+    },
+    {
+      "_comment": "目标元数据加速桶：只写 prod-raw-logs/ 前缀。含分块上传所需权限。注意不含 DeleteObject（MAB 不支持）",
+      "effect": "allow",
+      "action": [
+        "cos:PutObject",
+        "cos:HeadObject",
+        "cos:InitiateMultipartUpload",
+        "cos:UploadPart",
+        "cos:CompleteMultipartUpload",
+        "cos:AbortMultipartUpload",
+        "cos:ListParts"
+      ],
+      "resource": [
+        "qcs::cos:ap-tokyo:uid/<uin>:dstmab-<appid>/prod-raw-logs/*"
+      ]
+    },
+    {
+      "_comment": "函数日志投递 CLS。失败排查全靠日志，这条不能少",
+      "effect": "allow",
+      "action": [
+        "cls:PutLogs",
+        "cls:CreateTopic",
+        "cls:DescribeTopics"
+      ],
+      "resource": "*"
+    }
+  ]
+}
